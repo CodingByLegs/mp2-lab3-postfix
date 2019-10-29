@@ -1,14 +1,35 @@
 ﻿#include "postfix.h"
 #include "stack.h"
 
-const int OPER_IN_ALL = 11; //всего операций
-const int PROH_ALL = 25; //всего проверок
-string alph = "()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 TPostfix::TPostfix()
 {
 	infix = "String is empty";
-	string proh[PROH_ALL];
+
+	TOperations[0] = '+';
+	TOperations[1] = '-';
+	TOperations[2] = '*';
+	TOperations[3] = '/';
+	TOperations[4] = '(';
+	TOperations[5] = ')';
+	TOperations[6] = "sin";
+	TOperations[7] = "cos";
+	TOperations[8] = "tg";
+	TOperations[9] = "ctg";
+	TOperations[10] = "sqrt";
+
+	TPriority[0] = 1;
+	TPriority[1] = 1;
+	TPriority[2] = 2;
+	TPriority[3] = 2;
+	TPriority[4] = 0;
+	TPriority[5] = -1;
+	TPriority[6] = 3;
+	TPriority[7] = 3;
+	TPriority[8] = 3;
+	TPriority[9] = 3;
+	TPriority[10] = 3;
+
 	proh[0] = "(+";
 	proh[1] = "(-";
 	proh[2] = "(*";
@@ -34,40 +55,15 @@ TPostfix::TPostfix()
 	proh[22] = "/*";
 	proh[23] = "//";
 	proh[24] = "/)";
-
-	string TOperations[OPER_IN_ALL]; //операции
-	TOperations[0] = '+';
-	TOperations[1] = '-';
-	TOperations[2] = '*';
-	TOperations[3] = '/';
-	TOperations[4] = '(';
-	TOperations[5] = ')';
-	TOperations[6] = "sin";
-	TOperations[7] = "cos";
-	TOperations[8] = "tg";
-	TOperations[9] = "ctg";
-	TOperations[10] = "sqrt";
-
-	int TPriority[OPER_IN_ALL];		//приоритет
-	TPriority[0] = 1;
-	TPriority[1] = 1;
-	TPriority[2] = 2;
-	TPriority[3] = 2;
-	TPriority[4] = 0;
-	TPriority[5] = -1;
-	TPriority[6] = 3;
-	TPriority[7] = 3;
-	TPriority[8] = 3;
-	TPriority[9] = 3;
-	TPriority[10] = 3;
 }
 
 bool TPostfix::IsCorrect(string &str)
 {
-	if (!(alph.find(str[0])))
+	string alph = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz()";
+	if (alph.find(str[0]) == -1)
 		return 0;
 	int a = (str.length() - 1);
-	if (!(alph.find(str[0])))
+	if (alph.find(str[0]) == -1)
 		return 0;
 	int left = 0;
 	int right = 0;
@@ -80,7 +76,7 @@ bool TPostfix::IsCorrect(string &str)
 	}
 	if (left != right)
 		return 0;
-	
+
 	for (int i = 0; i < PROH_ALL; i++)
 		if (str.find(proh[i]) != -1)
 			return 0;
@@ -107,6 +103,9 @@ int TPostfix::TheTable(const string &str, int IsNeed) {
 	IsNeed =	0 - является ли переименной, 1 - приоритет	*/
 	if (str == "")
 		return 0;
+
+	
+
 	switch (IsNeed)
 	{
 	case 0:
@@ -119,14 +118,13 @@ int TPostfix::TheTable(const string &str, int IsNeed) {
 		for (int i = 0; i < OPER_IN_ALL; i++)
 			if (str.compare(TOperations[i]) == 0)
 				return TPriority[i];
-		return -1;
+		return -1;			//не является операцией
 		break;
 	default:
-		throw("Invalid second variable in the function TheTable");
+		throw("Invalid second variable in the function TheTable"); //assert???
 		break;
 	}
 }
-
 
 TPostfix& TPostfix::operator=(string &str) {
 	if (!IsCorrect(str))
